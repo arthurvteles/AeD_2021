@@ -1,0 +1,221 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+//STRUCTS//
+typedef struct pessoa {
+    char user[10] ; 
+    int idade ; 
+    unsigned long int telefone ; 
+}PESSOA ; 
+
+PESSOA pessoas[10] ; //VARIAVEL GLOBAL  //
+
+typedef struct variaveis {
+    int escolha ;
+    int i ;
+    int tam ;          //percorre laços 
+    int tam_aux ;
+    int tam_aux_2 ; 
+    int comp ;         //compara no remove nome // 
+}VARIAVEIS ;
+
+//FUNÇÕES // 
+void menu() ;
+void adiciona_usuario(VARIAVEIS *variables,int *tamanho) ;
+void remover_nomes (VARIAVEIS *variables,int *tamanho) ;
+void listar_todos (VARIAVEIS *variables) ;
+void imprime_especifico(VARIAVEIS *variables,int *tamanho) ;
+
+int main(){
+
+    void *pbuffer = (VARIAVEIS*) malloc (sizeof(VARIAVEIS)) ;
+        if(pbuffer == NULL) {
+            printf("\nNÃO FOI POSSIVEL ALOCAR MEMORIA") ;
+            exit(1);
+        }
+
+
+    ((VARIAVEIS*)pbuffer)->escolha = 0;
+
+    int *tamanho ; 
+    tamanho = &((VARIAVEIS*)pbuffer)->tam ;
+    *tamanho = 0 ; 
+    
+
+    ((VARIAVEIS*)pbuffer)->i = 0 ; 
+
+    while(((VARIAVEIS*)pbuffer)->i < 10 ){                      //vai ajudar no remove nome // 
+        pessoas[((VARIAVEIS*)pbuffer)->i].user[0] = '\0' ;
+        ((VARIAVEIS*)pbuffer)->i = ((VARIAVEIS*)pbuffer)->i + 1 ; 
+    } 
+
+
+    while(((VARIAVEIS*)pbuffer)->escolha != 5 ){
+        menu() ;
+        scanf("%d",&((VARIAVEIS*)pbuffer)->escolha) ;
+
+        switch(((VARIAVEIS*)pbuffer)->escolha){
+            case 1:
+                adiciona_usuario(pbuffer,tamanho);
+            break ;
+
+            case 2: 
+                remover_nomes(pbuffer,tamanho) ; 
+            break;
+
+            case 3:
+                imprime_especifico (pbuffer,tamanho) ;
+            break ; 
+
+            case 4 : 
+                listar_todos(pbuffer);
+            break ; 
+        }
+
+    }
+    
+    
+    free(pbuffer) ; 
+    return 0;
+}
+
+//MENU//
+void menu () {
+    printf("\n*****MENU*****\n") ;
+    printf("1-ADICIONAR NOME\n") ; 
+    printf("2-REMOVER NOME\n") ;
+    printf("3-BUSCAR\n") ;
+    printf("4-LISTAR TODOS\n") ; 
+    printf("5-SAIR \n: ") ;
+}//FIM MENU//
+
+//ADICIONA USUARIO//
+void adiciona_usuario(VARIAVEIS *variables,int *tamanho){
+    char *nome_aux ; 
+        nome_aux=(char*)malloc(sizeof(char)*10) ;
+            if(nome_aux == NULL){
+                printf("\nNÃO FOI POSSIVEL ALOCAR MEMORIA") ;
+                exit(1) ;
+            }
+    
+            if(*tamanho < 10) {
+                printf("\nDigite o nome que deseja adicionar :") ; 
+                    setbuf(stdin,NULL) ; 
+                    fgets(nome_aux ,10,stdin) ;
+                    nome_aux[strlen(nome_aux)-1]= '\0';                
+                strcpy(pessoas[*tamanho].user,nome_aux) ; 
+                
+                printf("\nDigite a idade :") ;
+                    scanf("%d",&pessoas[*tamanho].idade) ; 
+
+                printf("\nDigite o telefone :") ;
+                    scanf("%lu",&pessoas[*tamanho].telefone) ; 
+
+
+                *tamanho = *tamanho + 1 ;
+            }else{
+                printf("\nNAO EH POSSIVEL ARMAZENAR MAIS NOME") ; 
+            }
+            
+
+free(nome_aux) ;
+}//FIM ADICIONA USUSARIO//
+
+//REMOVER USUARIOS//
+void remover_nomes(VARIAVEIS *variables,int *tamanho) {
+    char *nome_aux ; 
+        nome_aux=(char*)malloc(sizeof(char)*10) ;
+            if(nome_aux == NULL){
+                printf("\nNÃO FOI POSSIVEL ALOCAR MEMORIA") ;
+                exit(1) ;
+            }
+    printf("Digite o nome que deseja remover : ");
+            setbuf(stdin,NULL) ;
+            fgets(nome_aux,10,stdin);
+            nome_aux[strlen(nome_aux)-1] ='\0' ;
+
+    variables->tam_aux = *tamanho - 1 ; 
+    
+
+    while(variables->tam_aux >= 0 ){
+        
+        variables->comp = strcmp(nome_aux ,pessoas[variables->tam_aux].user) ; 
+        
+
+        if(variables->comp == 0){
+            variables->tam_aux_2 = variables->tam_aux ; 
+                
+                while((pessoas[variables->tam_aux_2].user[0] != '\0') && (variables->tam_aux_2 < 10)){
+                    variables->i = variables->tam_aux_2 + 1;
+                        
+                    strcpy(pessoas[variables->tam_aux_2].user,pessoas[variables->i].user ) ; 
+                    pessoas[variables->tam_aux_2].idade = pessoas[variables->i].idade ; 
+                    pessoas[variables->tam_aux_2].telefone = pessoas[variables->i].telefone ; 
+
+                    variables->tam_aux_2 = variables->tam_aux_2 + 1 ;
+                }
+         pessoas[variables->tam_aux_2 - 1].user[0] = '\0' ;
+         *tamanho = *tamanho - 1; 
+        }
+
+        variables->tam_aux = variables->tam_aux - 1 ; 
+    }
+
+    
+    free(nome_aux) ; 
+}
+//FIM REMOVER USUARIOS//
+
+//LISTAR TODOS//
+void listar_todos(VARIAVEIS *variables){
+
+    //todos os nomes//
+    
+    variables->tam_aux_2 = 0 ;
+    while((pessoas[variables->tam_aux_2].user[0] != '\0') && (variables->tam_aux_2 < 10)){
+        printf("\nNOME :%s",pessoas[variables->tam_aux_2].user) ;
+        printf("\nIDADE :%d",pessoas[variables->tam_aux_2].idade) ;
+        printf("\nTELEFONE :%lu\n\n",pessoas[variables->tam_aux_2].telefone) ;
+
+
+        variables->tam_aux_2 = variables->tam_aux_2 + 1 ;
+    
+    }
+} //FIM DO LISTAR TODOS//
+
+//IMRPIME ESPECIFICO //
+void imprime_especifico(VARIAVEIS *variables,int *tamanho) {
+
+    
+    char *nome_aux ; 
+        nome_aux=(char*)malloc(sizeof(char)*10) ;
+            if(nome_aux == NULL){
+                printf("\nNÃO FOI POSSIVEL ALOCAR MEMORIA") ;
+                exit(1) ;
+            }
+
+    printf("\nDigite o nome que desejas buscar : ");
+        setbuf(stdin,NULL) ;
+        fgets(nome_aux,10,stdin);
+        nome_aux[strlen(nome_aux)-1] ='\0' ;
+
+    variables->tam_aux = *tamanho - 1 ;
+    
+     while(variables->tam_aux >= 0 ){  
+        variables->comp = strcmp(nome_aux ,pessoas[variables->tam_aux].user) ; 
+        
+        if(variables->comp == 0){ 
+            printf("\nNOME: %s", pessoas[variables->tam_aux].user) ;  
+            printf("\nIDADE : %d", pessoas[variables->tam_aux].idade) ;
+            printf("\nTELEFONE : %lu", pessoas[variables->tam_aux].telefone) ; 
+            break ;
+        } 
+     variables->tam_aux = variables->tam_aux - 1 ; 
+    }
+
+            
+
+
+free(nome_aux); 
+}
