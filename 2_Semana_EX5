@@ -1,0 +1,180 @@
+#include <stdio.h> 
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+//DECLARAÇÃO DAS STRUCTS // 
+typedef struct pessoa {
+    char nome[20] ;
+    int idade ; 
+    float altura ; 
+}PESSOA ;
+
+typedef struct node {
+    PESSOA usuario ; 
+    struct node *ant ; 
+    struct node *prox ;
+}NODE ;
+
+typedef struct lista { 
+    int tamanho ;
+    NODE *head ;
+}LISTA ;
+
+//DECLARACAO DAS FUNCOES// 
+void menu () ;
+LISTA *adiciona_nome(LISTA *list) ; 
+LISTA *remove_nome(LISTA *list);
+void libera_lista(LISTA *list) ;
+void imprime_lista (LISTA *list) ;
+
+
+//int main //
+int main() {
+    
+    //variaveis locais //   
+    int escolha = 0 ; 
+    LISTA *list ;
+    
+    //inicializa a lista ;
+    list = (LISTA*) malloc (sizeof(LISTA)); 
+        if(list ==NULL) {
+            printf("\n***NAO FOI POSSIVEL ALOCAR MEMORIA***") ;
+            exit(1); 
+        }
+    
+    list->head = NULL ; 
+    list->tamanho = 0; 
+
+
+    while(escolha != 3 ) {
+        menu();
+        scanf("%d",&escolha); 
+
+        switch(escolha) {
+
+            case 1 : 
+                list = adiciona_nome(list) ; 
+            break ;
+
+            case 2 :
+                remove_nome(list);
+            break ;    
+        }
+    
+    }
+    imprime_lista(list) ;
+    libera_lista(list);  
+    free(list) ;
+    return 0 ;
+}
+
+
+void menu () {
+    printf("\n***MENU***");
+    printf("\n1-Adiciona nome") ;
+    printf("\n2-Remove nome") ;
+    printf("\n3-Sair: ");
+}
+
+
+
+LISTA *adiciona_nome(LISTA *list) {
+   
+    NODE *auxiliar= (NODE*) malloc(sizeof(NODE)) ; 
+        if(auxiliar == NULL){
+            printf("\n***NAO FOI POSSIVEL ARMAZENAR MEMORIA***") ;
+            exit(1) ;
+        }
+    
+    //le os dados do usuario//
+    printf("\nDigite o nome da pessoa que desejas adiciionar : ") ;
+        setbuf(stdin,NULL);
+        fgets(auxiliar->usuario.nome , 20 , stdin) ;
+        auxiliar->usuario.nome[strlen(auxiliar->usuario.nome)-1] = '\0' ;
+
+    
+    printf("\nIdade : ") ;
+        scanf("%d",&auxiliar->usuario.idade) ;
+    
+    printf("\nAltura : ") ;
+        scanf("%f",&auxiliar->usuario.altura) ; 
+
+    NODE *percorre = list->head ;
+    if(list->tamanho == 0) {//se a lista tiver vazia//
+        auxiliar->ant = NULL ;
+        auxiliar->prox = NULL ; 
+        list->head = auxiliar ;
+        list->tamanho =list->tamanho + 1 ;
+        return list ;
+    }else {
+       while(percorre->prox != NULL) {   //percorre ate o ultimo elemento //
+           percorre = percorre->prox ;
+       }
+            percorre->prox = auxiliar ;        
+            auxiliar->ant = percorre;
+            auxiliar->prox = NULL ;
+            list->tamanho = list->tamanho + 1 ;
+            return list ; 
+    }
+}
+
+LISTA *remove_nome(LISTA *list){
+    char name[20];
+
+    printf("\nDigite o nome que deseja remover :") ; 
+        setbuf(stdin,NULL) ; 
+        fgets(name,20,stdin) ; 
+        name[strlen(name)-1] = '\0' ;
+    
+    int comp ; 
+    NODE *no_aux = list->head ; 
+
+    comp = strcmp(name,no_aux->usuario.nome) ; 
+
+    while((no_aux->prox != NULL) && (comp != 0)) {
+        no_aux = no_aux->prox ; 
+        comp = strcmp(name,no_aux->usuario.nome) ;
+    }
+
+    if(no_aux->ant == NULL){
+        list->head = no_aux->prox ; 
+    }else {
+        no_aux->ant->prox = no_aux->prox ;
+        
+        if(no_aux->prox != NULL){
+            no_aux->prox->ant = no_aux->ant   ;
+        }
+    }
+free(no_aux) ;
+return list ; 
+}
+
+
+void libera_lista (LISTA *list){
+    NODE *no_aux = list->head  ;
+
+    while(no_aux->prox != NULL) {
+        no_aux = no_aux->prox ;  
+        free(no_aux->ant) ;
+    }
+    free(no_aux) ; 
+}
+
+
+
+void imprime_lista (LISTA *list) {
+    
+        NODE *auxiliar = list->head ;                      //struct auxiliar para percorrer a lista //
+        printf("\n");
+        
+        while (auxiliar != NULL){
+            printf("\nNOME : %s" ,auxiliar->usuario.nome ) ;  
+            printf("\nIDADE : %d", auxiliar->usuario.idade) ; 
+            printf("\nAltura : %.2f m", auxiliar->usuario.altura) ; 
+            auxiliar = auxiliar->prox ;                       
+            printf("\n\n");
+        }
+
+        free(auxiliar);
+} //FIM IMPRIME LISTA// 
