@@ -1,0 +1,430 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+//STRUCT DADOS DO USUARIO//
+typedef struct dados {
+    char *nome; 
+    int *idade ; 
+    unsigned long int *telefone ; 
+}DADOS ; 
+
+//STRUCT NODE //
+typedef struct node {
+    DADOS user ; 
+    struct node *prox ;
+    struct node *ant ;  
+}NODE ;
+
+
+//STRUCT LISTA //
+typedef struct lista { 
+    NODE *head ; 
+    int tamanho ; 
+}LISTA ;
+
+
+//STRUCT COM VARIAVEIS //
+typedef struct variaveis{
+    int escolha ; 
+    int comp ; 
+    int comp_2 ; 
+    int escolha_imp ; 
+    int auxiliar_idade ; 
+    unsigned long int auxiliar_telefone ; 
+    int i ;
+    NODE *ptr ; 
+    DADOS usuario_aux ; 
+    int j ;
+
+}VARIAVEIS ;
+
+//FUNCOES//
+void menu () ;
+void adiciona_nome (LISTA *list,VARIAVEIS *var); 
+void imprime_lista (LISTA *list , VARIAVEIS *var) ;
+LISTA *remove_nomes(LISTA *list,VARIAVEIS *var) ;  
+int imprime_especifico (LISTA *list , VARIAVEIS *var) ;  
+LISTA *libera_lista (LISTA *list ) ;
+
+
+
+//MAIN//
+int main(){
+    
+    
+    //ALOCANDO MEMORIA PARA TODAS AS VARIAVEIS// 
+    LISTA *list ; 
+        list =(LISTA*)malloc (sizeof(LISTA)) ;
+            if(list == NULL) {
+                printf ("\nERROR : Nao foi possivel alocar memoria") ; 
+                exit (1) ; 
+            }
+    list->head = NULL ; 
+    list->tamanho = 0 ;
+    
+    void *pbuffer = (VARIAVEIS*)malloc(sizeof(VARIAVEIS)) ; 
+        if(list == NULL) {
+            printf ("\nERROR : Nao foi possivel alocar memoria") ; 
+            exit (1) ; 
+        }
+    
+    ((VARIAVEIS*)pbuffer)->escolha = 0 ;
+
+        
+    while(((VARIAVEIS*)pbuffer)->escolha != 5) {
+        menu();        
+        scanf("%d",&((VARIAVEIS*)pbuffer)->escolha) ;
+
+        switch (((VARIAVEIS*)pbuffer)->escolha){
+        
+            case 1 :
+                adiciona_nome(list,pbuffer) ; 
+            break;
+
+            case 2 : 
+                list =  remove_nomes(list,pbuffer) ; 
+            break ; 
+
+            case 3 : 
+                imprime_especifico(list , pbuffer);
+            break ;
+            
+            case 4 : 
+                imprime_lista(list, pbuffer) ; 
+            break ;
+        }
+
+    
+    }
+
+     
+    list = libera_lista(list) ; 
+    free(list);
+    free(pbuffer) ; 
+    
+    return 0 ;
+}
+//FIM DA MAIN//
+
+//MENU//
+void menu () {
+    printf("\n*****MENU*****\n") ;
+    printf("1-ADICIONAR NOME\n") ; 
+    printf("2-REMOVER NOME\n") ;
+    printf("3-BUSCAR\n") ;
+    printf("4-LISTAR TODOS\n") ; 
+    printf("5-SAIR \n: ") ;
+}//FIM MENU//
+
+//ADICIONA NOMES // 
+void adiciona_nome(LISTA *list, VARIAVEIS *var){
+
+    NODE *usuario ; 
+        usuario = (NODE*) malloc(sizeof(NODE)) ; 
+        if(usuario == NULL){
+            printf("\nERROR : NAO FOI POSSIVEL ALOCAR MEMORIA");
+            exit(1); 
+        }
+    
+    //lendo o nome do usuario //
+    (*usuario).user.nome = (char*)malloc(sizeof(char)*20) ; 
+    if((*usuario).user.nome == NULL){
+            printf("\nERROR : NAO FOI POSSIVEL ALOCAR MEMORIA");
+            exit(1); 
+        }
+
+    printf("\nDigite o nome que desejas adicionar : ") ;    
+        setbuf(stdin,NULL) ;
+        fgets((*usuario).user.nome,20,stdin) ; 
+        (*usuario).user.nome[strlen((*usuario).user.nome) - 1] = '\0' ; 
+
+    //lendo a idade do usuario // 
+
+    printf("\nDigite a idade do usuario : ") ; 
+        scanf("%d",&var->auxiliar_idade);
+
+    usuario->user.idade = var->auxiliar_idade ; 
+    
+    //lendo o telefone do usuario //
+      
+    printf("\nDigite o telefone do usuario :") ;
+        scanf("%lu",&var->auxiliar_telefone) ;
+
+    usuario->user.telefone = var->auxiliar_telefone ;  
+    
+
+
+    //adicionando o nome a lista//
+    if(list->tamanho == 0){
+        usuario->ant = NULL ;
+        usuario->prox = NULL ; 
+        list->head = usuario ;  
+        list->tamanho = list->tamanho + 1 ;
+    }else {
+        usuario->ant = NULL ; 
+        usuario->prox = list->head ;  
+        list->head->ant = usuario ; 
+        list->head = usuario ; 
+        list->tamanho = list->tamanho + 1; 
+    }
+
+
+}
+//FIM DO ADICIONA NOMES // 
+
+//REMOVE NOMES // 
+LISTA *remove_nomes(LISTA *list, VARIAVEIS *var) {
+    
+    char *nome_aux ; 
+        nome_aux = (char*)malloc(sizeof(char)*20) ;
+            if(nome_aux == NULL) {
+                printf("ERRO : NAO FOI POSSIVEL ALOCAR O NOME .") ;
+                exit(1) ; 
+            }
+    
+    printf("\nDigite o nome que desejas remover : ");
+    setbuf(stdin,NULL);
+    fgets(nome_aux,20,stdin);
+    nome_aux[strlen(nome_aux)-1] = '\0';
+
+    NODE *aux = list->head ; 
+
+    while(aux != NULL) {
+        var->comp = strcmp(nome_aux , aux->user.nome) ; 
+        
+        if(var->comp == 0) {
+            if(aux->ant == NULL) {
+                list->head = aux->prox ; 
+                free(aux->user.nome) ;
+                free(aux) ;
+                free(nome_aux) ;
+                list->tamanho = list->tamanho - 1 ; 
+                return list ; 
+            }else{
+                aux->ant->prox = aux->prox ; 
+
+                if(aux->prox != NULL) {
+                    aux->prox->ant = aux->ant   ;
+                }
+                free(aux->user.nome) ;
+                free(aux) ;
+                free(nome_aux) ;
+                list->tamanho = list->tamanho - 1 ; 
+                return list ;
+            }
+        }
+            aux = aux->prox ; 
+    }
+
+
+free(nome_aux) ; 
+free(aux) ; 
+return list ; 
+}
+//FIM DO REMOVE NOMES// 
+
+
+//IMPRIME ESPECIFICO // 
+int imprime_especifico(LISTA *list , VARIAVEIS *var){
+    char *nome_aux ; 
+        nome_aux = (char*)malloc(sizeof(char)*20) ; 
+            if(nome_aux == NULL) {
+                printf("\nERRO : NAO FOI POSSIVEL ALOCAR NOME") ;
+                exit(1) ;
+            }    
+
+    printf("\nDigite o nome que desejas adicionar :") ;
+    setbuf(stdin,NULL) ;
+    fgets(nome_aux,20,stdin) ;
+    nome_aux[strlen(nome_aux)-1] = '\0' ;
+
+    NODE *aux= list->head ; 
+
+    while(aux != NULL) {
+        var->comp = strcmp(nome_aux , aux->user.nome) ; 
+        
+        if(var->comp == 0) {
+            printf("\nNome : %s",aux->user.nome) ;
+            printf("\nIdade : %d",aux->user.idade) ;
+            printf("\nTelefon : %lu",aux->user.telefone);
+            printf("\n\n");
+            free(nome_aux) ; 
+            return 0 ;
+        }
+        aux = aux->prox ;
+    }
+free(aux) ;
+free(nome_aux) ; 
+}
+//FIM IMPRIME ESPECIFICO//
+
+
+//IMPRIME NOMES// 
+void imprime_lista (LISTA *list , VARIAVEIS *var) {
+    
+        NODE *auxiliar = list->head ;                      //struct auxiliar para percorrer a lista //
+       
+ 
+
+        printf("\nComo desejas imprimir os nome : ") ; 
+        printf("\n1-Ordem alfabetica") ;
+        printf("\n2-Ordem alfabetica inversa") ;
+        printf("\n3-Do mais novo para o mais velho") ; 
+        printf("\n4-Qualquer ordem: ") ; 
+        scanf("%d", &var->escolha_imp) ; 
+        
+         var->j = 0 ;
+        
+
+        //IMPRIME O NOME POR ORDEM ALFABETICA // 
+        if(var->escolha_imp == 1){
+        while(auxiliar->prox != NULL){
+            
+            var->ptr = auxiliar->prox ; 
+
+            
+            for(var->i = var->j ; var->i < list->tamanho - 1 ; var->i ++ ){
+                   
+                var->comp = strcmp (auxiliar->user.nome , var->ptr->user.nome) ; 
+
+                if(var->comp > 0 ){
+                    var->usuario_aux = auxiliar->user ; 
+                    auxiliar->user = var->ptr->user ; 
+                    var->ptr->user = var->usuario_aux ; 
+                }
+                
+                var->ptr = var->ptr->prox ; 
+            }
+            auxiliar = auxiliar->prox ;
+            
+            var->j = var->j + 1 ;
+            }
+        
+        
+        auxiliar = list->head ; 
+        
+            while(auxiliar!= NULL){
+                printf("\nNOME : %s" ,auxiliar->user.nome ) ;  
+                printf("\nIDADE : %d", auxiliar->user.idade) ; 
+                printf("\nAltura : %lu ", auxiliar->user.telefone) ; 
+                auxiliar = auxiliar->prox ;                       
+                printf("\n\n");
+
+            }
+        }        
+        
+
+    //IMPRIME O NOME POR ORDEM ALFABETA INVERSA // 
+        if(var->escolha_imp == 2){
+        while(auxiliar->prox != NULL){
+            
+            var->ptr = auxiliar->prox ; 
+
+            
+            for(var->i = var->j ; var->i < list->tamanho - 1 ; var->i ++ ){
+                   
+                var->comp = strcmp (auxiliar->user.nome , var->ptr->user.nome) ; 
+
+                if(var->comp < 0 ){
+                    var->usuario_aux = auxiliar->user ; 
+                    auxiliar->user = var->ptr->user ; 
+                    var->ptr->user = var->usuario_aux ; 
+                }
+                
+                var->ptr = var->ptr->prox ; 
+            }
+            auxiliar = auxiliar->prox ;
+            
+            var->j = var->j + 1 ;
+            }
+        
+        
+        auxiliar = list->head ; 
+        
+            while(auxiliar!= NULL){
+                printf("\nNOME : %s" ,auxiliar->user.nome ) ;  
+                printf("\nIDADE : %d", auxiliar->user.idade) ; 
+                printf("\nAltura : %lu ", auxiliar->user.telefone) ; 
+                auxiliar = auxiliar->prox ;                       
+                printf("\n\n");
+
+            }
+        } 
+    
+    //DO MAIS NOVO PARA O MAIS NOVO //
+    if(var->escolha_imp == 3){
+        while(auxiliar->prox != NULL){
+            
+            var->ptr = auxiliar->prox ; 
+
+            
+            for(var->i = var->j ; var->i < list->tamanho - 1 ; var->i ++ ){
+                    
+
+                if(auxiliar->user.idade > var->ptr->user.idade ){
+                    var->usuario_aux = auxiliar->user ; 
+                    auxiliar->user = var->ptr->user ; 
+                    var->ptr->user = var->usuario_aux ; 
+                }
+                
+                var->ptr = var->ptr->prox ; 
+            }
+            auxiliar = auxiliar->prox ;
+            
+            var->j = var->j + 1 ;
+            }
+        
+        
+        auxiliar = list->head ; 
+        
+            while(auxiliar!= NULL){
+                printf("\nNOME : %s" ,auxiliar->user.nome ) ;  
+                printf("\nIDADE : %d", auxiliar->user.idade) ; 
+                printf("\nAltura : %lu ", auxiliar->user.telefone) ; 
+                auxiliar = auxiliar->prox ;                       
+                printf("\n\n");
+
+            }
+        }  
+
+
+    //IMPRIME O NOME EM QUALQUER ORDEM //
+        if(var->escolha_imp == 4) {
+            while (auxiliar != NULL){
+                printf("\nNOME : %s" ,auxiliar->user.nome ) ;  
+                printf("\nIDADE : %d", auxiliar->user.idade) ; 
+                printf("\nAltura : %lu ", auxiliar->user.telefone) ; 
+                auxiliar = auxiliar->prox ;                       
+                printf("\n\n");
+            }
+        }
+        
+        
+        free(auxiliar);
+        free(var->ptr) ; 
+    
+}
+//FIM DO IMPRIME NOMES//
+
+LISTA *libera_lista(LISTA *list) {
+    NODE *aux =  list->head ; 
+
+        while (aux->prox != NULL){
+            free(aux->user.nome);
+          
+            aux = aux->prox ; 
+
+            
+            free(aux->ant) ; 
+         
+        }
+    free(aux->user.nome);
+    free(aux) ;
+
+    return list ; 
+
+}
+
+
