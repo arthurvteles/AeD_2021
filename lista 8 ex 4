@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+int funcao (int k , int n ) ;
+
+int main(){ 
+    int n,k ; 
+
+    printf("\nDigite o valor de k : ") ; 
+        scanf("%d", &k) ;
+    printf("\nDigite o valor de n : ") ; 
+        scanf("%d", &n) ;
+    
+    printf("\nK elevado a N eh : %d",funcao(k,n)) ; 
+
+    return 0 ; 
+}
+
+int funcao(int k , int n ){
+
+    if(n==1) {
+        return k;
+    }
+    else{
+        return k * funcao (k , (n-1)) ; 
+    }
+
+    return k ; 
+}
