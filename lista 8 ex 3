@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int cubo (int n) ; 
+
+int main(){
+
+    int n ; 
+
+    printf("\nDigite o valor que desejas calcular ao cubo : ") ;
+        scanf("%d",&n) ; 
+
+    printf("\nO numero %d ao cubo eh : %d",n , cubo(n)) ; 
+    
+
+    return 0 ;
+}
+
+
+int cubo (n) {
+
+    if(n == 1) {
+        return 1 ;
+    }else{
+        return pow(n,3) + cubo (n-1) ; 
+    }
+
+    return n ; 
+}
