@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int imprime (int n) ; 
+
+int main (){
+
+    int n ; 
+
+    printf("\nN: ") ;
+        scanf("%d",&n) ; 
+
+    imprime(n) ; 
+
+
+    return 0 ;
+}
+
+
+int imprime (int n) { 
+    if(n == 0) {
+        printf("%d", 0) ;
+        return 0 ;
+    }else {
+        printf("%d", n + imprime(n-1)  ) ; 
+    }
+
+     
+
+}
