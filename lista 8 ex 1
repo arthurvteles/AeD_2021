@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+int somatorio (int soma) ; 
+
+int main (){
+    int soma ; 
+
+    printf("\nDigite o valor que desejas somar : ") ;
+        scanf("%d",&soma) ;  
+
+    printf("\nO somatorio de %d eh : %d",soma , somatorio(soma)) ;
+
+}
+
+int somatorio (int soma) {
+
+    if(soma == 1) {
+        return 1 ; 
+    }
+    else {
+        return soma + somatorio(soma-1) ; 
+    }
+
+    return soma ; 
+}
