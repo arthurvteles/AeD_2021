@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h> 
+#include <math.h> 
+
+void *func_real (int *vector , int tamanho , int tamanho_novo) ; 
+
+
+int main() {
+
+    int tamanho , tamanho_novo , i , escolha = 0 ;
+    int *vector ; 
+
+    printf("Digite o tamanho do vetor que desejas criar : ") ; 
+        scanf("%d",&tamanho);
+
+    vector = (int*) malloc(sizeof(int)*tamanho) ;
+
+    for(i=0 ; i<tamanho ; i++) {
+        printf("\nDigite o elemento %d do vetor : ",i+1) ; 
+        scanf("%d",&vector[i]) ;
+    }
+
+    printf("\nVetor : ") ;
+        for(i=0; i<tamanho ; i++) {
+            printf("[%d]  ",vector[i]) ; 
+        }
+    
+    while(escolha != 2 ) {
+        printf("\n1-Reallocar") ; 
+        printf("\n2-Sair : ") ;
+            scanf("%d",& escolha) ; 
+
+        switch(escolha) { 
+            case 1 : 
+                printf("\nTamanho novo : ") ; 
+                    scanf("%d",&tamanho_novo) ; 
+                func_real(vector , tamanho , tamanho_novo) ; 
+            break ; 
+        }
+    }
+ 
+    
+    free(vector) ;
+    return 0 ;
+
+}
+
+void *func_real (int *vector , int tamanho , int tamanho_novo ) {
+    int *aux , i ; 
+
+    aux = (int*) malloc (sizeof(int)*tamanho) ; 
+
+    for(i = 0 ; i<tamanho ; i++) {
+        aux[i] = vector[i] ;
+    }
+
+    free(vector) ;
+
+    vector = (int*)malloc (sizeof(int)*tamanho_novo) ; 
+
+    if(tamanho_novo > tamanho) {
+       
+
+        for(i=0 ; i <tamanho ; i++ ) {
+            vector[i] = aux[i] ; 
+        }
+
+        for(i = tamanho  ; i<tamanho_novo ; i++) {
+            printf("\nDigite o elemento %d do vetor : ",i+1) ; 
+                scanf("%d",&vector[i]) ; 
+        }
+
+        for(i=0 ; i < tamanho_novo ; i++ ){
+            printf("[%d]  ",vector[i]) ; 
+        } 
+    }else {
+        if(tamanho_novo < tamanho) {
+            for(i=0 ; i< tamanho_novo ; i++) {
+                vector[i] = aux[i] ; 
+            }
+
+            for(i=0 ; i < tamanho_novo ; i++ ){
+                printf("[%d]  ",vector[i]) ; 
+            } 
+        }
+    }
+
+    free(aux) ;
+}
